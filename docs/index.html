@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.3">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-08-10">
+
+<title>Learning Latent Personas of Film Characters</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-e44360b8a8db1e130c7792fece1c8032.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-dd5592b7e88c1e22fdc038671147c4ab.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: #e3e3e5;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: #e3e3e5;
+background: #041e42;
+      }
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="style.css">
+<meta name="citation_title" content="Learning Latent Personas of Film Characters">
+<meta name="citation_abstract" content="We present two latent variable models for learning character types, or *personas*, in film, in which a persona is defined as a set of mixtures over latent lexical classes. These lexical classes capture the stereotypical actions of which a character is the agent and patient, as well as attributes by which they are described. As the first attempt to solve this problem explicitly, we also present a new dataset for the text-driven analysis of film, along with a benchmark testbed to help drive future work in this area.
+">
+<meta name="citation_author" content="David Bamman">
+<meta name="citation_publication_date" content="2026-08-10">
+<meta name="citation_cover_date" content="2026-08-10">
+<meta name="citation_year" content="2026">
+<meta name="citation_online_date" content="2026-08-10">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Aristotle’s Poetics;,citation_abstract=George Whalley’s English translation of the Poetics breathes new life into the study of Aristotle’s aesthetics by allowing the English-speaking student to experience the dynamic quality characteristic of Aristotle’s arguments in the original Greek. Aristotle’s Poetics combines a complete translation of the Poetics with a running commentary, printed on facing pages, that keeps the reader in continuous contact with the linguistic and critical subtleties of the original while highlighting crucial issues for students of literature and literary theory. Whalley’s unconventional interpretation emphasizes Aristotle’s treatment of art as dynamic process rather than finished product. The volume includes two essays by Whalley in which he outlines his method and purpose. He identifies a deep congruence between Aristotle’s understanding of mimesis and Samuel Taylor Coleridge’s view of imagination. Whalley’s new translation makes a major contribution to the study of not only the Poetics and tragedy but all literature and aesthetics.;,citation_author=undefined Aristotle;,citation_publication_date=-335;,citation_cover_date=-335;,citation_year=-335;,citation_fulltext_html_url=https://books.google.com?id=14gTwJMEl7UC;,citation_isbn=978-0-7735-1612-0;,citation_language=en-US;">
+<meta name="citation_reference" content="citation_title=Learning Latent Personas of Film Characters;,citation_author=David Bamman;,citation_author=Brendan O’Connor;,citation_author=Noah A. Smith;,citation_editor=Hinrich Schuetze;,citation_editor=Pascale Fung;,citation_editor=Massimo Poesio;,citation_publication_date=2013-08;,citation_cover_date=2013-08;,citation_year=2013;,citation_fulltext_html_url=https://aclanthology.org/P13-1035/;,citation_conference_title=Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers);,citation_conference=Association for Computational Linguistics;">
+<meta name="citation_reference" content="citation_title=Learning Script Knowledge with Web Experiments;,citation_author=Michaela Regneri;,citation_author=Alexander Koller;,citation_author=Manfred Pinkal;,citation_editor=Jan Hajič;,citation_editor=Sandra Carberry;,citation_editor=Stephen Clark;,citation_editor=Joakim Nivre;,citation_publication_date=2010-07;,citation_cover_date=2010-07;,citation_year=2010;,citation_fulltext_html_url=https://aclanthology.org/P10-1100/;,citation_conference_title=Proceedings of the 48th Annual Meeting of the Association for Computational Linguistics;,citation_conference=Association for Computational Linguistics;">
+<meta name="citation_reference" content="citation_title=Scripts, Plans, Goals, and Understanding: An Inquiry Into Human Knowledge Structures;,citation_abstract=First Published in 1977. In the summer of 1971, there was a workshop in an ill-defined field at the intersection of psychology, artificial intelligence, and linguistics. The fifteen participants were in various ways interested in the representation of large systems of knowledge (or beliefs) based upon an understanding process operating upon information expressed in natural language. This book reflects a convergence of interests at the intersection of psychology and artificial intelligence. What is the nature of knowledge and how is this knowledge used? These questions lie at the core of both psychology and artificial intelligence.;,citation_author=Roger C. Schank;,citation_author=Robert P. Abelson;,citation_publication_date=1977;,citation_cover_date=1977;,citation_year=1977;,citation_fulltext_html_url=https://books.google.com?id=YFuJABU1ABIC;,citation_isbn=978-1-134-91966-6;,citation_language=en-US;">
+</head>
+
+<body class="quarto-light">
+
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Learning Latent Personas of Film Characters</h1>
+            <p class="subtitle lead">DSAN 5650: Causal Inference for Computational Social Science</p>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+            <div class="quarto-title-meta-author">
+          <div class="quarto-title-meta-heading">Author</div>
+          <div class="quarto-title-meta-heading">Affiliation</div>
+          
+                <div class="quarto-title-meta-contents">
+            <p class="author">David Bamman <a href="mailto:dbamman@cs.cmu.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Georgetown University<br>Data Science and Analytics
+                      </p>
+                  </div>
+                    </div>
+        
+        <div class="quarto-title-meta">
+
+                      
+                <div>
+            <div class="quarto-title-meta-heading">Published</div>
+            <div class="quarto-title-meta-contents">
+              <p class="date">August 10, 2026</p>
+            </div>
+          </div>
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      <div class="quarto-alternate-formats"><div class="quarto-title-meta-heading">Other Formats</div><div class="quarto-title-meta-contents"><p><a href="index.pdf"><i class="bi bi-file-pdf"></i>PDF</a></p></div></div></div>
+    </div>
+
+    <div>
+      <div class="abstract">
+        <div class="block-title">Abstract</div>
+        <p>We present two latent variable models for learning character types, or <em>personas</em>, in film, in which a persona is defined as a set of mixtures over latent lexical classes. These lexical classes capture the stereotypical actions of which a character is the agent and patient, as well as attributes by which they are described. As the first attempt to solve this problem explicitly, we also present a new dataset for the text-driven analysis of film, along with a benchmark testbed to help drive future work in this area.</p>
+      </div>
+    </div>
+
+
+    <div class="quarto-other-links-text-target">
+    <div class="quarto-code-links"><div class="quarto-title-meta-heading">Code Links</div><div class="quarto-title-meta-contents"><span style="padding-right: 0.5em;"><a href="https://github.com/jpowerj/dsan5650-project-modeling/" target="_blank"><i class="bi bi-github"></i>GitHub Repo</a>,</span><span><a href="https://github.com/new?template_name=dsan5650-project-modeling&amp;template_owner=jpowerj" target="_blank"><i class="bi bi-box-arrow-up-right"></i>Use This Template</a></span></div></div></div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">2</span> Data</a>
+  <ul class="collapse">
+  <li><a href="#text" id="toc-text" class="nav-link" data-scroll-target="#text"><span class="header-section-number">2.1</span> Text</a></li>
+  <li><a href="#metadata" id="toc-metadata" class="nav-link" data-scroll-target="#metadata"><span class="header-section-number">2.2</span> Metadata</a></li>
+  </ul></li>
+  <li><a href="#personas" id="toc-personas" class="nav-link" data-scroll-target="#personas"><span class="header-section-number">3</span> Personas</a></li>
+  <li><a href="#models" id="toc-models" class="nav-link" data-scroll-target="#models"><span class="header-section-number">4</span> Models</a>
+  <ul class="collapse">
+  <li><a href="#dirichlet-persona-model" id="toc-dirichlet-persona-model" class="nav-link" data-scroll-target="#dirichlet-persona-model"><span class="header-section-number">4.1</span> Dirichlet Persona Model</a></li>
+  <li><a href="#persona-regression" id="toc-persona-regression" class="nav-link" data-scroll-target="#persona-regression"><span class="header-section-number">4.2</span> Persona Regression</a></li>
+  </ul></li>
+  <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation"><span class="header-section-number">5</span> Evaluation</a>
+  <ul class="collapse">
+  <li><a href="#character-names" id="toc-character-names" class="nav-link" data-scroll-target="#character-names"><span class="header-section-number">5.1</span> Character Names</a></li>
+  <li><a href="#tv-tropes" id="toc-tv-tropes" class="nav-link" data-scroll-target="#tv-tropes"><span class="header-section-number">5.2</span> TV Tropes</a></li>
+  <li><a href="#variation-of-information" id="toc-variation-of-information" class="nav-link" data-scroll-target="#variation-of-information"><span class="header-section-number">5.3</span> Variation of Information</a></li>
+  <li><a href="#purity" id="toc-purity" class="nav-link" data-scroll-target="#purity"><span class="header-section-number">5.4</span> Purity</a></li>
+  </ul></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="header-section-number">6</span> Exploratory Data Analysis</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">7</span> Conclusion</a></li>
+  <li><a href="#acknowledgments" id="toc-acknowledgments" class="nav-link" data-scroll-target="#acknowledgments">Acknowledgments</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+  
+
+
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>Philosophers and dramatists have long argued whether the most important element of narrative is <em>plot</em> or <em>character</em>. Under a classical Aristotelian perspective, plot is supreme;<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> modern theoretical dramatists and screenwriters disagree.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>Without addressing this debate directly, much computational work on narrative has focused on learning the sequence of events by which a story is defined; in this tradition we might situate seminal work on learning procedural scripts <span class="citation" data-cites="schank_scripts_2013 regneri_learning_2010">(<a href="#ref-schank_scripts_2013" role="doc-biblioref">Schank and Abelson 1977</a>; <a href="#ref-regneri_learning_2010" role="doc-biblioref">Regneri, Koller, and Pinkal 2010</a>)</span>, narrative chains (Chambers and Jurafsky, 2008), and plot structure (Finlayson, 2011; Elsner, 2012; McIntyre and Lapata, 2010; Goyal et al., 2010).</p>
+<p>We present a complementary perspective that addresses the importance of <em>character</em> in defining a story. Our testbed is film. Under this perspective, a character’s latent internal nature drives the action we observe. Articulating narrative in this way leads to a natural generative story: we first decide that we’re going to make a particular kind of movie (e.g., a romantic comedy), then decide on a set of character types, or personas, we want to see involved (the <code>PROTAGONIST</code>, the <code>LOVE INTEREST</code>, the <code>BEST FRIEND</code>). After picking this set, we fill out each of these roles with specific attributes (female, 28 years old, klutzy); with this cast of characters, we then sketch out the set of events by which they interact with the world and with each other (runs but just misses the train, spills coffee on her boss) – through which they reveal to the viewer those inherent qualities about themselves.</p>
+<p>This work is inspired by past approaches that infer typed semantic arguments along with narrative schemas (Chambers and Jurafsky, 2009; Regneri et al., 2011), but seeks a more holistic view of character, one that learns from stereotypical attributes in addition to plot events. This work also naturally draws on earlier work on the unsupervised learning of verbal arguments and semantic roles (Pereira et al., 1993; Grenager and Manning, 2006; Titov and Klementiev, 2012) and unsupervised relation discovery (Yao et al., 2011).</p>
+<p>This character-centric perspective leads to two natural questions. First, can we learn what those standard personas are by how individual characters (who instantiate those types) are portrayed? Second, can we learn the set of attributes and actions by which we recognize those common types? How do we, as viewers, recognize a <code>VILLIAN</code>?</p>
+<p>At its most extreme, this perspective reduces to learning the grand archetypes of Joseph Campbell (1949) or Carl Jung (1981), such as the <code>HERO</code> or <code>TRICKSTER</code>. We seek, however, a more fine-grained set that includes not only archetypes, but stereotypes as well – characters defined by a fixed set of actions widely known to be representative of a class. This work offers a data-driven method for answering these questions, presenting two proba- blistic generative models for inferring latent character types.</p>
+<p>This is the first work that attempts to learn explicit character personas in detail; as such, we present a new dataset for character type induction in film and a benchmark testbed for evaluating future work.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+<section id="data" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="data"><span class="header-section-number">2</span> Data</h2>
+<section id="text" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="text"><span class="header-section-number">2.1</span> Text</h3>
+<p>Our primary source of data comes from 42,306 movie plot summaries extracted from the November 2, 2012 dump of English-language Wikipedia.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> These summaries, which have a median length of approximately 176 words,<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> contain a concise synopsis of the movie’s events, along with implicit descriptions of the characters (e.g., “rebel leader Princess Leia,” “evil lord Darth Vader”). To extract structure from this data, we use the Stanford CoreNLP library<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> to tag and syntactically parse the text, extract entities, and resolve coreference within the document. With this structured representation, we extract linguistic features for each character, looking at immediate verb governors and attribute syntactic dependencies to all of the entity’s mention headwords, extracted from the typed dependency tuples produced by the parser; we refer to “CCprocessed” syntactic relations described in de Marneffe and Manning (2008):</p>
+<ul>
+<li><strong>Agent verbs.</strong> Verbs for which the entity is an agent argument (<em>nsubj</em> or <em>agent</em>).</li>
+<li><strong>Patient verbs.</strong> Verbs for which the entity is the patient, theme or other argument (<em>dobj</em>, <em>nsubjpass</em>, <em>iobj</em>, or any prepositional argument <em>prep_*</em>).</li>
+<li><strong>Attributes.</strong> Adjectives and common noun words that relate to the mention as adjectival modifiers, noun-noun compounds, appositives, or copulas (<em>nsubj</em> or <em>appos</em> governors, or <em>nsubj</em>, <em>appos</em>, <em>amod</em>, <em>nn</em> dependents of an entity mention).</li>
+</ul>
+<p>These three roles capture three different ways in which character personas are revealed: the actions they take on others, the actions done to them, and the attributes by which they are described. For every character we thus extract a bag of <span class="math inline">\((r, w)\)</span> tuples, where <span class="math inline">\(w\)</span> is the word lemma and <span class="math inline">\(r\)</span> is one of <span class="math inline">\(\{\text{agent verb}, \text{patient verb}, \text{attribute}\}\)</span> as identified by the above rules.</p>
+</section>
+<section id="metadata" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="metadata"><span class="header-section-number">2.2</span> Metadata</h3>
+<p>Our second source of information consists of character and movie metadata drawn from the November 4, 2012 dump of Freebase.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> At the movie level, this includes data on the language, country, release date and detailed genre (365 non-mutually exclusive categories, including “Epic Western,” “Revenge,” and “Hip Hop Movies”). Many of the characters in movies are also associated with the actors who play them; since many actors also have detailed biographical information, we can ground the characters in what we know of those real people – including their gender and estimated age at the time of the movie’s release (the difference between the release date of the movie and the actor’s date of birth).</p>
+<p>Across all 42,306 movies, entities average 3.4 agent events, 2.0 patient events, and 2.1 attributes. For all experiments described below, we restrict our dataset to only those events that are among the 1,000 most frequent overall, and only characters with at least 3 events. 120,345 characters meet this criterion; of these, 33,559 can be matched to Freebase actors with a specified gender, and 29,802 can be matched to actors with a given date of birth. Of all actors in the Freebase data whose age is given, the average age at the time of movie is 37.9 (standard deviation 14.1); of all actors whose gender is known, 66.7% are male.8 The age distribution is strongly bimodal when conditioning on gender: the average age of a female actress at the time of a movie’s release is 33.0 (s.d. 13.4), while that of a male actor is 40.5 (s.d. 13.7).</p>
+</section>
+</section>
+<section id="personas" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="personas"><span class="header-section-number">3</span> Personas</h2>
+<p>One way we recognize a character’s latent type is by observing the stereotypical actions they perform (e.g., <code>VILLAINS</code> <em>strangle</em>), the actions done to them (e.g., <code>VILLAINS</code> are <em>foiled</em> and <em>arrested</em>) and the words by which they are described (<code>VILLAINS</code> are <em>evil</em>). To capture this intuition, we define a <em>persona</em> as a set of three typed distributions: one for the words for which the character is the agent, one for which it is the patient, and one for words by which the character is attributively modified. Each distribution ranges over a fixed set of latent word classes, or <em>topics</em>. <a href="#fig-1" class="quarto-xref">Figure&nbsp;1</a> illustrates this definition for a toy example: a <code>ZOMBIE</code> persona may be characterized as being the agent of primarily <em>eating</em> and <em>killing</em> actions, the patient of <em>killing</em> actions, and the object of <em>dead</em> attributes. The topic labeled <em>eat</em> may include words like <em>eat</em>, <em>drink</em>, and <em>devour</em>.</p>
+<div id="fig-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/fig-1.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: A persona is a set of three distributions over latent topics. In this toy example, the ZOMBIE persona is primarily characterized by being the agent of words from the eat and kill topics, the patient of kill words, and the object of words from the dead topic."><img src="images/fig-1.svg" class="img-fluid figure-img" style="width:70.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: A persona is a set of three distributions over latent topics. In this toy example, the ZOMBIE persona is primarily characterized by being the agent of words from the eat and kill topics, the patient of kill words, and the object of words from the dead topic.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="models" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="models"><span class="header-section-number">4</span> Models</h2>
+<p>Both models that we present here simultaneously learn three things: 1.) a soft clustering over words to topics (e.g., the verb “strangle” is mostly a type of <em>Assault</em> word); 2.) a soft clustering over topics to personas (e.g., <code>VILLIANS</code> perform a lot of <em>Assault</em> actions); and 3.) a hard clustering over characters to personas (e.g., Darth Vader is a <code>VILLAIN</code>.) They each use different evidence: since our data includes not only textual features (in the form of actions and attributes of the characters) but also non-textual information (such as movie genre, age and gender), we design a model that exploits this additional source of information in discriminating between character types; since this extra-linguistic information may not always be available, we also design a model that learns only from the text itself. We present the text-only model first for simplicity. Throughout, <span class="math inline">\(V\)</span> is the word vocabulary size, <span class="math inline">\(P\)</span> is the number of personas, and <span class="math inline">\(K\)</span> is the number of topics.</p>
+<div id="fig-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/fig-2.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Dirichlet persona model (left) and persona regression model (right)."><img src="images/fig-2.svg" class="img-fluid figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Dirichlet persona model (left) and persona regression model (right).
+</figcaption>
+</figure>
+</div>
+<div id="tbl-1" class="quarto-float quarto-figure quarto-figure-center anchored" data-tbl-colwidths="[20,80]">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Definition of variables
+</figcaption>
+<div aria-describedby="tbl-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 80%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(P\)</span></td>
+<td style="text-align: left;">Number of personas (hyperparameter)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(K\)</span></td>
+<td style="text-align: left;">Number of word topics (hyperparameter)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(D\)</span></td>
+<td style="text-align: left;">Number of movie plot summaries</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(E\)</span></td>
+<td style="text-align: left;">Number of characters in movie <span class="math inline">\(d\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(W\)</span></td>
+<td style="text-align: left;">Number of (role, word) tuples used by character <span class="math inline">\(e\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\phi_k\)</span></td>
+<td style="text-align: left;">Topic <span class="math inline">\(k\)</span>’s distribution over <span class="math inline">\(V\)</span> words</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(r\)</span></td>
+<td style="text-align: left;">Tuple role: agent verb, patient verb, attribute</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\psi_{p,r}\)</span></td>
+<td style="text-align: left;">Distribution over topics for persona <span class="math inline">\(p\)</span> in role <span class="math inline">\(r\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\theta_d\)</span></td>
+<td style="text-align: left;">Movie <span class="math inline">\(d\)</span>’s distribution over personas</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(p_e\)</span></td>
+<td style="text-align: left;">Character <span class="math inline">\(e\)</span>’s persona (integer, <span class="math inline">\(p \in \{1 \ldots P \}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(j\)</span></td>
+<td style="text-align: left;">A specific <span class="math inline">\((r, w)\)</span> tuple in the data</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(z_j\)</span></td>
+<td style="text-align: left;">Word topic for tuple <span class="math inline">\(j\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(w_j\)</span></td>
+<td style="text-align: left;">Word for tuple <span class="math inline">\(j\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\alpha\)</span></td>
+<td style="text-align: left;">Concentration parameter for Dirichlet model</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\beta\)</span></td>
+<td style="text-align: left;">Feature weights for regression model</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\mu, \sigma^2\)</span></td>
+<td style="text-align: left;">Gaussian mean and variance (for regularizing <span class="math inline">\(\beta\)</span>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(m_d\)</span></td>
+<td style="text-align: left;">Movie features (from movie metadata)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(m_e\)</span></td>
+<td style="text-align: left;">Entity features (from movie actor metadata)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\nu_r, \gamma\)</span></td>
+<td style="text-align: left;">Dirichlet concentration parameters</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="dirichlet-persona-model" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="dirichlet-persona-model"><span class="header-section-number">4.1</span> Dirichlet Persona Model</h3>
+<p>In the most basic model, we only use information from the structured text, which comes as a bag of <span class="math inline">\((r, w)\)</span> tuples for each character in a movie, where <span class="math inline">\(w\)</span> is the word lemma and <span class="math inline">\(r\)</span> is the relation of the word with respect to the character (one of <span class="math inline">\(\text{agent verb}\)</span>, <span class="math inline">\(\text{patient verb}\)</span>, or <span class="math inline">\(\text{attribute}\)</span>, as outlined in §2.1 above). The generative story runs as follows. First, let there be <span class="math inline">\(K\)</span> latent word topics; as in LDA (Blei et al., 2003), these are words that will be soft-clustered together by virtue of appearing in similar contexts. Each latent word cluster <span class="math inline">\(\phi_k \sim \text{Dir}(\gamma)\)</span> is a multinomial over the <span class="math inline">\(V\)</span> words in the vocabulary, drawn from a Dirichlet parameterized by <span class="math inline">\(\gamma\)</span>. Next, let a persona <span class="math inline">\(p\)</span> be defined as a set of three multinomials <span class="math inline">\(\psi_p\)</span> over these <span class="math inline">\(K\)</span> topics, one for each typed role <span class="math inline">\(r\)</span>, each drawn from a Dirichlet with a role-specific hyperparameter (<span class="math inline">\(\nu_r\)</span>).</p>
+<p>Every document (a movie plot summary) contains a set of characters, each of which is associated with a single latent persona p; for every observed (r, w) tuple associated with the character, we sample a latent topic k from the role-specific ψp,r. Conditioned on this topic assignment, the observed word is drawn from φk. The distribution of these personas for a given document is determined by a document-specific multinomial θ, drawn from a Dirichlet parameterized by α.</p>
+<p><a href="#fig-2" class="quarto-xref">Figure&nbsp;2</a> (left) illustrates the form of the model. To simplify inference, we collapse out the persona-topic distributions ψ, the topic-word distributions φ and the persona distribution θ for each document. Inference on the remaining latent variables – the persona <span class="math inline">\(p\)</span> for each character type and the topic <span class="math inline">\(z\)</span> for each word associated with that character – is conducted via collapsed Gibbs sampling (Griffiths and Steyvers, 2004); at each iteration, for each character <span class="math inline">\(e\)</span>, we sample their persona <span class="math inline">\(p_e\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr(p_e = k \mid p_{−e}, z, \alpha, \nu) \propto \\
+\left(c^{−e}_{d,k} + \alpha_k\right)
+\times
+\prod_j \frac{
+c^{−e}_{r_j,k,z_j} + \nu_{r_j}
+}{
+c^{−e}_{r_j,k,*} + K \nu_{r_j}
+}
+\end{aligned}
+\]</span></p>
+<p>Here, <span class="math inline">\(c^{−e}_{d,k}\)</span> is the count of all characters in document <span class="math inline">\(d\)</span> whose current persona sample is also <span class="math inline">\(k\)</span> (not counting the current character <span class="math inline">\(e\)</span> under consideration);<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> <span class="math inline">\(j\)</span> ranges over all <span class="math inline">\((r_j, w_j)\)</span> tuples associated with character <span class="math inline">\(e\)</span>. Each <span class="math inline">\(c^{−e}_{r_j,k,z_j}\)</span> is the count of all tuples with role <span class="math inline">\(r_j\)</span> and current topic <span class="math inline">\(z_j\)</span> used with persona <span class="math inline">\(k\)</span>. <span class="math inline">\(c^{−e}_{r_j,k,*}\)</span> is the same count, summing over all topics <span class="math inline">\(z\)</span>. In other words, the probability that character <span class="math inline">\(e\)</span> embodies persona <span class="math inline">\(k\)</span> is proportional to the number of other characters in the plot summary who also embody that persona (plus the Dirichlet hyperparameter <span class="math inline">\(\alpha_k\)</span>) times the contribution of each observed word <span class="math inline">\(w_j\)</span> for that character, given its current topic assignment <span class="math inline">\(z_j\)</span>.</p>
+<p>Once all personas have been sampled, we sample the latent topics for each tuple as the following.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr(zj = k \mid p, z−j , w, r, ν, γ) \propto \\
+\frac{
+  c^{−j}_{r_j,p,k} + \nu_{r_j}
+}{
+  c^{−j}_{r_j,p,*} + K \nu_{r_j}
+}
+\times
+\frac{
+  c^{−j}_{k,w_j} + \gamma
+}{
+c^{−j}_{k,*} + V \gamma
+}
+\end{aligned}
+\]</span></p>
+<p>Here, conditioned on the current sample <span class="math inline">\(p\)</span> for the character’s persona, the probability that tuple <span class="math inline">\(j\)</span> originates in topic <span class="math inline">\(k\)</span> is proportional to the number of other tuples with that same role <span class="math inline">\(r_j\)</span> drawn from the same topic for that persona (<span class="math inline">\(c^{−j}_{r_j,p,k}\)</span>), normalized by the number of other <span class="math inline">\(r_j\)</span> tuples associated with that persona overall (<span class="math inline">\(c^{−j}_{r_j,p,*}\)</span>), multiplied by the number of times word <span class="math inline">\(w_j\)</span> is associated with that topic (<span class="math inline">\(c^{−j}_{k,w_j}\)</span>) normalized by the total number of other words associated with that topic overall (<span class="math inline">\(c^{−j}_{k,*}\)</span>).</p>
+<p>We optimize the values of the Dirichlet hyperparameters <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\nu\)</span>, and <span class="math inline">\(\gamma\)</span> using slice sampling with a uniform prior every 20 iterations for the first 500 iterations, and every 100 iterations thereafter. After a burn-in phase of 10,000 iterations, we collect samples every 10 iterations (to lessen autocorrelation) until a total of 100 have been collected.</p>
+</section>
+<section id="persona-regression" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="persona-regression"><span class="header-section-number">4.2</span> Persona Regression</h3>
+<p>To incorporate observed metadata in the form of movie genre, character age and character gender, we adopt an “upstream” modeling approach (Mimno and McCallum, 2008), letting those observed features influence the conditional probability with which a given character is expected to assume a particular persona, prior to observing any of their actions. This captures the increased likelihood, for example, that a 25-year-old male actor in an action movie will play an <code>ACTION HERO</code> than he will play a <code>VALLEY GIRL</code>.</p>
+<p>To capture these effects, each character’s latent persona is no longer drawn from a document-specific Dirichlet; instead, the <span class="math inline">\(P\)</span>-dimensional simplex is the output of a multiclass logistic regression, where the document genre metadata <span class="math inline">\(m_d\)</span> and the character age and gender metadata <span class="math inline">\(m_e\)</span> together form a feature vector that combines with persona-specific feature weights to form the following log-linear distribution over personas, with the probability for persona <span class="math inline">\(k\)</span> being:</p>
+<p><span class="math display">\[
+\Pr(p = k \mid m_d, m_e, \beta) = \frac{
+  \exp([m_d;m_e]^\top \beta_k )
+}{
+1 + \sum_{j=1}^{P-1} \exp([m_d;m_e]^\top \beta_j )
+}
+\]</span></p>
+<p>The persona-specific <span class="math inline">\(\beta\)</span> coefficients are learned through Monte Carlo Expectation Maximization (Wei and Tanner, 1990), in which we alternate between the following:</p>
+<ol type="1">
+<li>Given current values for <span class="math inline">\(\beta\)</span>, for all characters <span class="math inline">\(e\)</span> in all plot summaries, sample values of <span class="math inline">\(p_e\)</span> and <span class="math inline">\(z_j\)</span> for all associated tuples.</li>
+<li>Given input metadata features <span class="math inline">\(m\)</span> and the associated sampled values of <span class="math inline">\(p\)</span>, find the values of <span class="math inline">\(\beta\)</span> that maximize the standard multiclass logistic regression log likelihood, subject to <span class="math inline">\(\ell_2\)</span> regularization.</li>
+</ol>
+<p><a href="#fig-2" class="quarto-xref">Figure&nbsp;2</a> (right) illustrates this model. As with the Dirichlet persona model, inference on <span class="math inline">\(p\)</span> for step 1 is conducted with collapsed Gibbs sampling; the only difference in the sampling probability from equation 1 is the effect of the prior, which here is deterministically fixed as the output of the regression.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr(p_e = k \mid p_{−e}, z, \nu, m_d, m_e, \beta) \propto \\
+\exp([m_d; m_e]^\top \beta_k)
+\times
+\prod_j
+\frac{
+  c^{−e}_{r_j,k,z_j} + \nu_{r_j}
+}{
+c^{−e}_{r_j,k,*} + K \nu_{r_j}
+}
+\end{aligned}
+\]</span></p>
+<p>The sampling equation for the topic assignments <span class="math inline">\(z\)</span> is identical to that in equation 2. In practice we optimize <span class="math inline">\(\beta\)</span> every 1,000 iterations, until a burn-in phase of 10,000 iterations has been reached; at this point we following the same sampling regime as for the Dirichlet persona model.</p>
+</section>
+</section>
+<section id="evaluation" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="evaluation"><span class="header-section-number">5</span> Evaluation</h2>
+<p>We evaluate our methods in two quantitative ways by measuring the degree to which we recover two different sets of gold-standard clusterings. This evaluation also helps offer guidance for model selection (in choosing the number of latent topics and personas) by measuring performance on an objective task.</p>
+<section id="character-names" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="character-names"><span class="header-section-number">5.1</span> Character Names</h3>
+<p>First, we consider all character names that occur in at least two separate movies, generally as a consequence of remakes or sequels; this includes proper names such as “Rocky Balboa,” “Oliver Twist,” and “Indiana Jones,” as well as generic type names such as “Gang Member” and “The Thief”; to minimize ambiguity, we only consider character names consisting of at least two tokens. Each of these names is used by at least two different characters; for example, a character named “Jason Bourne” is portrayed in The Bourne Identity, The Bourne Supremacy, and The Bourne Ultimatum. While these characters are certainly free to assume different roles in different movies, we believe that, in the aggregate, they should tend to embody the same character type and thus prove to be a natural clustering to recover. 970 character names occur at least twice in our data, and 2,666 individual characters use one of those names. Let those 970 character names define 970 unique gold clusters whose members include the individual characters who use that name.</p>
+</section>
+<section id="tv-tropes" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="tv-tropes"><span class="header-section-number">5.2</span> TV Tropes</h3>
+<p>As a second external measure of validation, we consider a manually created clustering presented at the website TV Tropes,<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> a wiki that collects user-submitted examples of common tropes (narrative, character and plot devices) found in television, film, and fiction, among other media. While TV Tropes contains a wide range of such conventions, we manually identified a set of 72 tropes that could reasonably be labeled character types, including <code>THE CORRUPT CORPORATE EXECUTIVE</code>, <code>THE HARDBOILED DETECTIVE</code>, <code>THE JERK JOCK</code>, <code>THE KLUTZ</code>, and <code>THE SURFER DUDE</code>.</p>
+<p>We manually aligned user-submitted examples of characters embodying these 72 character types with the canonical references in Freebase to create a test set of 501 individual characters. While the 72 character tropes represented here are a more subjective measure, we expect to be able to at least partially recover this clustering.</p>
+</section>
+<section id="variation-of-information" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="variation-of-information"><span class="header-section-number">5.3</span> Variation of Information</h3>
+<p>To measure the similarity between the two clusterings of movie characters, gold clusters <span class="math inline">\(\mathcal{G}\)</span> and induced latent persona clusters <span class="math inline">\(\mathcal{C}\)</span>, we calculate the variation of information (Meila, 2007):</p>
+<p><span class="math display">\[
+\begin{aligned}
+VI(\mathcal{G}, \mathcal{C}) &amp;= H(\mathcal{G}) + H(\mathcal{C}) − 2I(\mathcal{G}, \mathcal{C}) \\
+&amp;= H(\mathcal{G} \mid \mathcal{C}) + H(\mathcal{C} \mid \mathcal{G})
+\end{aligned}
+\]</span></p>
+<p>VI measures the information-theoretic distance between the two clusterings: a lower value means greater similarity, and <span class="math inline">\(VI = 0\)</span> if they are identical. Low VI indicates that (induced) clusters and (gold) clusters tend to overlap; i.e., knowing a character’s (induced) cluster usually tells us their (gold) cluster, and vice versa. Variation of information is a metric (symmetric and obeys triangle inequality), and has a number of other desirable properties.</p>
+<p>Table 1 presents the VI between the learned persona clusters and gold clusters, for varying numbers of personas (P = {25, 50, 100}) and topics (K = {25, 50, 100}). To determine significance with respect to a random baseline, we conduct a permutation test (Fisher, 1935; Pitman, 1937) in which we randomly shuffle the labels of the learned persona clusters and count the number of times in 1,000 such trials that the VI of the observed persona labels is lower than the VI of the permuted labels; this defines a nonparametric p-value. All results presented are significant at <span class="math inline">\(p &lt; 0.001\)</span> (i.e.&nbsp;observed VI is never lower than the simulation VI).</p>
+<p>Over all tests in comparison to both gold clusterings, we see VI improve as both <span class="math inline">\(P\)</span> and, to a lesser extent, <span class="math inline">\(K\)</span> increase. While this may be expected as the number of personas increase to match the number of distinct types in the gold clusters (970 and 72, respectively), the fact that VI improves as the number of latent topics increases suggests that more fine-grained topics are helpful for capturing nuanced character types.<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a></p>
+<p>The difference between the persona regression model and the Dirichlet persona model here is not significant; while VI allows us to compare models with different numbers of latent clusters, its requirement that clusterings be mutually informative places a high overhead on models that are fundamentally unidirectional (in Table 1, for example, the room for improvement between two models of the same <span class="math inline">\(P\)</span> and <span class="math inline">\(K\)</span> is naturally smaller than the bigger difference between different <span class="math inline">\(P\)</span> or <span class="math inline">\(K\)</span>).</p>
+<p>While we would naturally prefer a text-only model to be as expressive as a model that requires potentially hard to acquire metadata, we tease apart whether a distinction actually does exist by evaluating the purity of the gold clusters with respect to the labels assigned them.</p>
+</section>
+<section id="purity" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="purity"><span class="header-section-number">5.4</span> Purity</h3>
+<p>For gold clusters <span class="math inline">\(\mathcal{G} = \{g_1, \ldots, g_k\}\)</span> and inferred clusters <span class="math inline">\(\mathcal{C} = \{c_1, \ldots, c_j\}\)</span> we calculate purity as:</p>
+<p><span class="math display">\[
+\text{Purity} = \frac{1}{N}\sum_k \max_j |g_k \cap c_j|
+\]</span></p>
+<p>While purity cannot be used to compare models of different persona size <span class="math inline">\(P\)</span>, it can help us distinguish between models of the same size. A model can attain perfect purity, however, by placing all characters into a single cluster; to control for this, we present a controlled baseline in which each character is assigned a latent character type label proportional to the size of the latent clusters we have learned (so that, for example, if one latent persona cluster contains 3.2% of the total characters, the probability of selecting that persona at random is 3.2%). Table 2 presents each model’s absolute purity score paired with its improvement over its controlled permutation (e.g., <span class="math inline">\(\uparrow 41%\)</span>).</p>
+<p>Within each fixed-size partition, the use of metadata yields a substantial improvement over the Dirichlet model, both in terms of absolute purity and in its relative improvement over its size-controlled baseline. In practice, we find that while the Dirichlet model distinguishes between character personas in different movies, the persona regression model helps distinguish between different personas within the same movie.</p>
+</section>
+</section>
+<section id="exploratory-data-analysis" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="exploratory-data-analysis"><span class="header-section-number">6</span> Exploratory Data Analysis</h2>
+<p>As with other generative approaches, latent persona models enable exploratory data analysis. To illustrate this, we present results from the persona regression model learned above, with 50 latent lexical classes and 100 latent personas. Figure 3 visualizes this data by focusing on a single movie, The Dark Knight (2008); the movie’s protagonist, Batman, belongs to the same latent persona as Detective Jim Gordon, as well as other action movie protagonists Jason Bourne and Tony Stark (Iron Man). The movie’s antagonist, The Joker, belongs to the same latent persona as Dracula from Van Helsing and Colin Sullivan from The Departed, illustrating the ability of personas to be informed by, but still cut across, different genres.</p>
+<p>Table 3 presents an exhaustive list of all 50 topics, along with an assigned label that consists of the single word with the highest PMI for that class. Of note are topics relating to romance (<em>unite</em>, <em>marry</em>, <em>woo</em>, <em>elope</em>, <em>court</em>), commercial transactions (<em>purchase</em>, <em>sign</em>, <em>sell</em>, <em>owe</em>, <em>buy</em>), and the classic criminal schema from Chambers (2011) (<em>sentence</em>, <em>arrest</em>, <em>assign</em>, <em>convict</em>, <em>promote</em>).</p>
+<p>Table 4 presents the most frequent 14 personas in our dataset, illustrated with characters from the 500 highest grossing movies. The personas learned are each three separate mixtures of the 50 latent topics (one for agent relations, one for patient relations, and one for attributes), as illustrated in <a href="#fig-1" class="quarto-xref">Figure&nbsp;1</a> above. Rather than presenting a <span class="math inline">\(3 \times 50\)</span> histogram for each persona, we illustrate them by listing the most characteristic topics, movie characters, and metadata features associated with it. Characteristic actions and features are defined as those having the highest smoothed pointwise mutual information with that class; exemplary characters are those with the highest posterior probability of being drawn from that class.</p>
+<p>Among the personas learned are canonical male action heroes (exemplified by the protagonists of <em>The Bourne Supremacy</em>, <em>Speed</em>, and <em>Taken</em>), superheroes (<em>Hulk</em>, <em>Batman and Robin</em>, Hector of <em>Troy</em>), and several romantic comedy types, largely characterized by words drawn from the <code>FLIRT</code> topic, including <em>flirt</em>, <em>reconcile</em>, <em>date</em>, <em>dance</em> and <em>forgive</em>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 35%">
+<col style="width: 15%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Label</th>
+<th>Most characteristic words</th>
+<th>Label</th>
+<th>Most characteristic words</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>UNITE</code></td>
+<td>unite marry woo elope court</td>
+<td><code>SWITCH</code></td>
+<td>switch confirm escort report instruct</td>
+</tr>
+<tr class="even">
+<td><code>PURCHASE</code></td>
+<td>purchase sign sell owe buy</td>
+<td><code>INFATUATE</code></td>
+<td>infatuate obsess acquaint revolve concern</td>
+</tr>
+<tr class="odd">
+<td><code>SHOOT</code></td>
+<td>shoot aim overpower interrogate kill</td>
+<td><code>ALIEN</code></td>
+<td>alien child governor bandit priest</td>
+</tr>
+<tr class="even">
+<td><code>EXPLORE</code></td>
+<td>explore investigate uncover deduce</td>
+<td><code>CAPTURE</code></td>
+<td>capture corner transport imprison trap</td>
+</tr>
+<tr class="odd">
+<td><code>WOMAN</code></td>
+<td>woman friend wife sister husband</td>
+<td><code>MAYA</code></td>
+<td>maya monster monk goon dragon</td>
+</tr>
+<tr class="even">
+<td><code>WITCH</code></td>
+<td>witch villager kid boy mom</td>
+<td><code>INHERIT</code></td>
+<td>inherit live imagine experience share</td>
+</tr>
+<tr class="odd">
+<td><code>INVADE</code></td>
+<td>invade sail travel land explore</td>
+<td><code>TESTIFY</code></td>
+<td>testify rebuff confess admit deny</td>
+</tr>
+<tr class="even">
+<td><code>DEFEAT</code></td>
+<td>defeat destroy transform battle inject</td>
+<td><code>APPLY</code></td>
+<td>apply struggle earn graduate develop</td>
+</tr>
+<tr class="odd">
+<td><code>CHASE</code></td>
+<td>chase scare hit punch eat</td>
+<td><code>EXPEL</code></td>
+<td>expel inspire humiliate bully grant</td>
+</tr>
+<tr class="even">
+<td><code>TALK</code></td>
+<td>talk tell reassure assure calm</td>
+<td><code>DIG</code></td>
+<td>dig take welcome sink revolve</td>
+</tr>
+<tr class="odd">
+<td><code>POP</code></td>
+<td>pop lift crawl laugh shake</td>
+<td><code>COMMAND</code></td>
+<td>command abduct invade seize surrender</td>
+</tr>
+<tr class="even">
+<td><code>SING</code></td>
+<td>sing perform cast produce dance</td>
+<td><code>RELENT</code></td>
+<td>relent refuse agree insist hope</td>
+</tr>
+<tr class="odd">
+<td><code>APPROVE</code></td>
+<td>approve die suffer forbid collapse</td>
+<td><code>EMBARK</code></td>
+<td>embark befriend enlist recall meet</td>
+</tr>
+<tr class="even">
+<td><code>WEREWOLF</code></td>
+<td>werewolf mother parent killer father</td>
+<td><code>MANIPULATE</code></td>
+<td>manipulate conclude investigate conduct</td>
+</tr>
+<tr class="odd">
+<td><code>DINER</code></td>
+<td>diner grandfather brother terrorist</td>
+<td><code>ELOPE</code></td>
+<td>elope forget succumb pretend like</td>
+</tr>
+<tr class="even">
+<td><code>DECAPITATE</code></td>
+<td>decapitate bite impale strangle stalk</td>
+<td><code>FLEE</code></td>
+<td>flee escape swim hide manage</td>
+</tr>
+<tr class="odd">
+<td><code>REPLY</code></td>
+<td>reply say mention answer shout</td>
+<td><code>BABY</code></td>
+<td>baby sheriff vampire knight spirit</td>
+</tr>
+<tr class="even">
+<td><code>DEMON</code></td>
+<td>demon narrator mayor duck crime</td>
+<td><code>BIND</code></td>
+<td>bind select belong refer represent</td>
+</tr>
+<tr class="odd">
+<td><code>CONGRATULATE</code></td>
+<td>congratulate cheer thank recommend</td>
+<td><code>REJOIN</code></td>
+<td>rejoin fly recruit include disguise</td>
+</tr>
+<tr class="even">
+<td><code>INTRODUCE</code></td>
+<td>introduce bring mock read hatch</td>
+<td><code>DARK</code></td>
+<td>dark major henchman warrior sergeant</td>
+</tr>
+<tr class="odd">
+<td><code>HATCH</code></td>
+<td>hatch don exist vow undergo</td>
+<td><code>SENTENCE</code></td>
+<td>sentence arrest assign convict promote</td>
+</tr>
+<tr class="even">
+<td><code>FLIRT</code></td>
+<td>flirt reconcile date dance forgive</td>
+<td><code>DISTURB</code></td>
+<td>disturb frighten confuse tease scare</td>
+</tr>
+<tr class="odd">
+<td><code>ADOPT</code></td>
+<td>adopt raise bear punish feed</td>
+<td><code>RIP</code></td>
+<td>rip vanish crawl drive smash</td>
+</tr>
+<tr class="even">
+<td><code>FAIRY</code></td>
+<td>fairy kidnapper soul slave president</td>
+<td><code>INFILTRATE</code></td>
+<td>infiltrate deduce leap evade obtain</td>
+</tr>
+<tr class="odd">
+<td><code>BUG</code></td>
+<td>bug zombie warden king princess</td>
+<td><code>SCREAM</code></td>
+<td>scream faint wake clean hear</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="conclusion" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">7</span> Conclusion</h2>
+<p>We present a method for automatically inferring latent character personas from text (and metadata, when available). While our testbed has been textual synopses of film, this approach is easily extended to other genres (such as novelistic fiction) and to non-fictional domains as well, where the choice of portraying a real-life person as embodying a particular kind of persona may, for instance, give insight into questions of media framing and bias in newswire; self-presentation of individual personas likewise has a long history in communication theory (Goffman, 1959) and may be useful for inferring user types for personalization systems (El-Arini et al., 2012). While the goal of this work has been to induce a set of latent character classes and partition all characters among them, one interesting question that remains is how a specific character’s actions may informatively be at odds with their inferred persona, given the choice of that persona as the single best fit to explain the actions we observe. By examining how any individual character deviates from the behavior indicative of their type, we might be able to paint a more nuanced picture of how a character can embody a specific persona while resisting it at the same time.</p>
+</section>
+<section id="acknowledgments" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="acknowledgments">Acknowledgments</h2>
+<p>We thank Megan Morrison at the CMU School of Drama for early conversations guiding our work, as well as the anonymous reviewers for helpful comments. The research reported in this article was supported by U.S. National Science Foundation grant IIS-0915187 and by an ARCS scholarship to D.B. This work was made possible through the use of computing resources made available by the Pittsburgh Supercomputing Center.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-aristotle_aristotles_-334" class="csl-entry" role="listitem">
+Aristotle. 335 BC. <em><a href="https://books.google.com?id=14gTwJMEl7UC">Aristotle’s <span>Poetics</span></a></em>. McGill-Queen’s Press - MQUP.
+</div>
+<div id="ref-regneri_learning_2010" class="csl-entry" role="listitem">
+Regneri, Michaela, Alexander Koller, and Manfred Pinkal. 2010. <span>“<a href="https://aclanthology.org/P10-1100/">Learning <span>Script Knowledge</span> with <span>Web Experiments</span></a>.”</span> In <em>Proceedings of the 48th <span>Annual Meeting</span> of the <span>Association</span> for <span>Computational Linguistics</span></em>, edited by Jan Hajič, Sandra Carberry, Stephen Clark, and Joakim Nivre, 979–88. Uppsala, Sweden: Association for Computational Linguistics.
+</div>
+<div id="ref-schank_scripts_2013" class="csl-entry" role="listitem">
+Schank, Roger C., and Robert P. Abelson. 1977. <em><a href="https://books.google.com?id=YFuJABU1ABIC">Scripts, <span>Plans</span>, <span>Goals</span>, and <span>Understanding</span>: <span>An Inquiry Into Human Knowledge Structures</span></a></em>. Psychology Press.
+</div>
+</div>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>“Dramatic action … is not with a view to the representation of character: character comes in as subsidiary to the actions … The Plot, then, is the first principle, and, as it were, the soul of a tragedy: Character holds the second place.” Poetics I.VI <span class="citation" data-cites="aristotle_aristotles_-334">Aristotle (<a href="#ref-aristotle_aristotles_-334" role="doc-biblioref">335 BC</a>)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Aristotle was mistaken in his time, and our scholars are mistaken today when they accept his rulings concerning character. Character was a great factor in Aristotle’s time, and no fine play ever was or ever will be written without it” (Egri, 1946, p.&nbsp;94); “What the reader wants is fascinating, complex characters” (McKee, 1997, 100).<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>All datasets and software for replication can be found at <a href="http://www.ark.cs.cmu.edu/personas">http://www.ark.cs.cmu.edu/personas</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p><a href="http://dumps.wikimedia.org/enwiki">http://dumps.wikimedia.org/enwiki</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>More popular movies naturally attract more attention on Wikipedia and hence more detail: the top 1,000 movies by box office revenue have a median length of 715 words<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p><a href="http://nlp.stanford.edu/software/corenlp.shtml">http://nlp.stanford.edu/software/corenlp.shtml</a><a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p><a href="http://download.freebase.com/datadumps/">http://download.freebase.com/datadumps/</a><a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>The <span class="math inline">\(−e\)</span> superscript denotes counts taken without considering the current sample for character <span class="math inline">\(e\)</span><a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p><a href="https://tvtropes.org">https://tvtropes.org</a><a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>This trend is robust to the choice of cluster metric: here VI and <span class="math inline">\(F\)</span>-score have a correlation of −0.87; as more latent topics and personas are added, clustering improves (causing the <span class="math inline">\(F\)</span>-score to go up and the VI distance to go down).<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
