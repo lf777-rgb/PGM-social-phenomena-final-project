@@ -1,0 +1,5 @@
+x,y,spearman_rho,p_value
+median_household_income,public_ports_per_100k,0.6979185520361991,1.2538976953916004e-08
+poverty_rate,public_ports_per_100k,-0.3799371121572725,0.005959885451806246
+population_density,public_ports_per_100k,0.3901357466063348,0.0046525940784065195
+evs_per_1000,public_ports_per_100k,0.8515837104072398,2.384174877273354e-15

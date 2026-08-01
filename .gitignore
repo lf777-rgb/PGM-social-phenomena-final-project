@@ -1,2 +1,7 @@
 /.quarto/
 **/*.quarto_ipynb
+__pycache__/
+*.pyc
+tmp/
+data/raw/census_2023_gazetteer_states.zip
+data/raw/census_acs5_state_social_vars_2023.json

@@ -1,0 +1,17 @@
+{
+  "loo_accuracy": 0.6470588235294118,
+  "chance_accuracy": 0.3333333333333333,
+  "loo_log_loss": 0.7528120394321399,
+  "baseline_log_loss": 1.1284028588971535,
+  "states": 51,
+  "model_log_likelihood": -313.5125463663998,
+  "model_parameters": 53,
+  "model_bic": 835.4118512671889,
+  "median_ports_per_100k": 54.21103019355871,
+  "median_evs_per_1000": 5.634926429958479,
+  "mean_profile_assignment_probability": 0.9588531455087893,
+  "p_high_charging_given_high_ev": 0.6407886988031104,
+  "p_high_charging_given_low_ev": 0.09956975910050167,
+  "p_high_charging_affluent_high_ev": 0.75,
+  "p_high_charging_lower_low_ev": 0.09090909090909081
+}
