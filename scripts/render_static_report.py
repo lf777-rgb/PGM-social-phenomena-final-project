@@ -36,9 +36,11 @@ def split_front_matter(text: str) -> tuple[dict[str, str], str]:
 
 def extract_abstract(meta: dict[str, str]) -> str:
     raw = meta.get("abstract", "")
-    raw = raw.replace("|", "").strip()
+    raw_lines = raw.splitlines()
+    if raw_lines and raw_lines[0].strip() == "|":
+        raw_lines = raw_lines[1:]
     lines = []
-    for line in raw.splitlines():
+    for line in raw_lines:
         stripped = line.strip()
         if stripped:
             lines.append(stripped)
@@ -252,7 +254,7 @@ def main() -> None:
   <header>
     <h1>{html.escape(title)}</h1>
     <p>{html.escape(subtitle)}</p>
-    <p>Lanbin Fan - Georgetown University, Data Science and Analytics - August 10, 2026</p>
+    <p>Lanbin Fan, Georgetown University, Data Science and Analytics, August 1, 2026</p>
     <div class="abstract"><strong>Abstract.</strong> {html.escape(abstract_text)}</div>
   </header>
   <main>

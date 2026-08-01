@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the state-level EV charging access PGM analysis."""
+"""Build the statewide EV charging access PGM analysis."""
 
 from __future__ import annotations
 
@@ -232,7 +232,7 @@ def add_context_profiles(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, 
     pressured_component = component_scores.drop(index=affluent_component)["pressure_score"].idxmax()
     mixed_component = [idx for idx in component_scores.index if idx not in {affluent_component, pressured_component}][0]
     label_map = {
-        pressured_component: "Lower-income pressured",
+        pressured_component: "Lower income pressured",
         mixed_component: "Mixed sparse",
         affluent_component: "Affluent dense",
     }
@@ -244,7 +244,7 @@ def add_context_profiles(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, 
     probabilities["state"] = work["state"]
     probabilities["context_profile"] = work["context_profile"]
     probabilities["max_profile_probability"] = probabilities[
-        ["Lower-income pressured", "Mixed sparse", "Affluent dense"]
+        ["Lower income pressured", "Mixed sparse", "Affluent dense"]
     ].max(axis=1)
 
     profile_summary = (
@@ -257,7 +257,7 @@ def add_context_profiles(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, 
             evs_per_1000=("evs_per_1000", "mean"),
             public_ports_per_100k=("public_ports_per_100k", "mean"),
         )
-        .reindex(["Lower-income pressured", "Mixed sparse", "Affluent dense"])
+        .reindex(["Lower income pressured", "Mixed sparse", "Affluent dense"])
         .reset_index()
     )
     return work.drop(columns=["profile_raw"]), bic, profile_summary.merge(
@@ -270,7 +270,7 @@ def add_context_profiles(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, 
 VARIABLES = OrderedDict(
     [
         ("region", ["Northeast", "Midwest", "South", "West"]),
-        ("context_profile", ["Lower-income pressured", "Mixed sparse", "Affluent dense"]),
+        ("context_profile", ["Lower income pressured", "Mixed sparse", "Affluent dense"]),
         ("income_level", LEVELS),
         ("poverty_level", LEVELS),
         ("density_level", LEVELS),
@@ -455,7 +455,7 @@ def plot_dag() -> None:
             xytext=(x1, y1 - 0.04 if y2 < y1 else y1 + 0.04),
             arrowprops=dict(arrowstyle="->", color="#273043", lw=1.5, shrinkA=8, shrinkB=8),
         )
-    ax.set_title("Bayesian network used for state-level EV charging access", fontsize=14, pad=20)
+    ax.set_title("Bayesian network used for state EV charging access", fontsize=14, pad=20)
     fig.tight_layout()
     fig.savefig(IMG / "pgm_dag.svg", bbox_inches="tight")
     plt.close(fig)
@@ -464,7 +464,7 @@ def plot_dag() -> None:
 def plot_figures(df: pd.DataFrame, profile_summary: pd.DataFrame, charging_cpt: pd.DataFrame) -> None:
     sns.set_theme(style="whitegrid", context="paper")
     palette = {
-        "Lower-income pressured": "#B85750",
+        "Lower income pressured": "#B85750",
         "Mixed sparse": "#4C7A92",
         "Affluent dense": "#3B8D64",
     }
@@ -529,7 +529,7 @@ def plot_figures(df: pd.DataFrame, profile_summary: pd.DataFrame, charging_cpt: 
     heat = (
         charging_cpt[charging_cpt["charging_access_level"].eq("High")]
         .pivot(index="context_profile", columns="ev_adoption_level", values="probability")
-        .reindex(index=["Lower-income pressured", "Mixed sparse", "Affluent dense"], columns=LEVELS)
+        .reindex(index=["Lower income pressured", "Mixed sparse", "Affluent dense"], columns=LEVELS)
     )
     fig, ax = plt.subplots(figsize=(6.8, 4.8))
     sns.heatmap(heat, annot=True, fmt=".2f", cmap="YlGnBu", vmin=0, vmax=1, cbar_kws={"label": "P(high charging access)"}, ax=ax)
@@ -590,7 +590,7 @@ def main() -> None:
         "p_high_charging_lower_low_ev": enumerate_query(
             cpts,
             "charging_access_level",
-            {"context_profile": "Lower-income pressured", "ev_adoption_level": "Low"},
+            {"context_profile": "Lower income pressured", "ev_adoption_level": "Low"},
         )["High"],
     }
 
@@ -599,7 +599,7 @@ def main() -> None:
     profile_states = (
         df.groupby("context_profile")["state_abbr"]
         .apply(lambda x: ", ".join(sorted(x)))
-        .reindex(["Lower-income pressured", "Mixed sparse", "Affluent dense"])
+        .reindex(["Lower income pressured", "Mixed sparse", "Affluent dense"])
         .reset_index(name="states")
     )
 

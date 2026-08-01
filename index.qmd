@@ -4,26 +4,26 @@ subtitle: "DSAN 5650: Causal Inference for Computational Social Science"
 authors:
   - name: Lanbin Fan
     affiliation: Georgetown University<br>Data Science and Analytics
-date: 2026-08-10
+date: 2026-08-01
 bibliography: PGM_Project.bib
 csl: chicago-17-no-url.csl
 title-block-banner: "#041e42"
 title-block-banner-color: "#e3e3e5"
 abstract: |
-  This project uses probabilistic graphical models to study uneven access to public electric vehicle charging infrastructure across the United States. I combine state-level charging port counts from the U.S. Department of Energy Alternative Fuels Data Center, 2023 EV registration counts, Census population estimates, Census SAIPE income and poverty estimates, and Census TIGERweb land area measures for the 50 states and the District of Columbia. A Gaussian mixture model identifies three latent state context profiles, and a Bayesian network represents probabilistic dependencies among region, latent context, income, poverty, population density, EV adoption, and charging access. The results show that high EV adoption is strongly associated with high public charging access: the fitted network estimates P(high charging access | high EV adoption) = 0.641, compared with 0.100 under low EV adoption. Leave-one-out prediction of charging access reaches 64.7 percent accuracy, above a 33.3 percent chance baseline. The model is descriptive rather than causal, but it shows how PGMs can organize evidence about infrastructure inequality and reveal interpretable state profiles.
+  This project uses probabilistic graphical models to study uneven access to public electric vehicle charging infrastructure across the United States. I combine statewide charging port counts from the U.S. Department of Energy Alternative Fuels Data Center, 2023 EV registration counts, Census population estimates, Census SAIPE income and poverty estimates, and Census TIGERweb land area measures for the 50 states and the District of Columbia. A Gaussian mixture model identifies three latent state context profiles, and a Bayesian network represents probabilistic dependencies among region, latent context, income, poverty, population density, EV adoption, and charging access. The results show that high EV adoption is strongly associated with high public charging access: the fitted network estimates P(high charging access | high EV adoption) = 0.641, compared with 0.100 under low EV adoption. Leave one out prediction of charging access reaches 64.7 percent accuracy, above a 33.3 percent chance baseline. The model is descriptive rather than causal, but it shows how PGMs can organize evidence about infrastructure inequality and reveal interpretable state profiles.
 ---
 
 ## Introduction
 
-Electric vehicles are often discussed as a transportation technology, but EV adoption is also a social and geographic process. A household's ability to consider an EV depends partly on whether charging infrastructure is nearby, reliable, and visible. At the same time, charging infrastructure is not placed evenly across communities. It tends to follow markets with higher EV adoption, denser travel demand, higher income, and stronger policy support. This creates a social phenomenon that is well suited to probabilistic graphical modeling: several observed factors move together, and a simple one-variable explanation is unlikely to capture the pattern.
+Electric vehicles are often discussed as a transportation technology, but EV adoption is also a social and geographic process. A household's ability to consider an EV depends partly on whether charging infrastructure is nearby, reliable, and visible. At the same time, charging infrastructure is not placed evenly across communities. It tends to follow markets with higher EV adoption, denser travel demand, higher income, and stronger policy support. This creates a social phenomenon that is well suited to probabilistic graphical modeling because several observed factors move together, and no single explanation is likely to capture the whole pattern.
 
 The research question for this project is:
 
-> How do state-level social context, population density, and EV adoption relate probabilistically to public EV charging access?
+> How do statewide social context, population density, and EV adoption relate probabilistically to public EV charging access?
 
-I treat this as a Path 1 project because the goal is not to estimate a causal effect of one policy or treatment. Instead, the goal is to model the joint structure of a social phenomenon. I use a latent variable model to identify unobserved state context profiles and then use a Bayesian network to represent how those profiles are associated with income, poverty, density, EV adoption, and charging access. This follows the spirit of the path example, where a latent persona model is used to infer hidden character types from observed text and metadata. Here, the hidden type is a state-level infrastructure context rather than a film persona.
+I treat this as a Path 1 project because the goal is not to estimate a causal effect of one policy or treatment. Instead, the goal is to model the joint structure of a social phenomenon. I use a latent variable model to identify unobserved state context profiles and then use a Bayesian network to represent how those profiles are associated with income, poverty, density, EV adoption, and charging access. This follows the spirit of the path example, where a latent persona model is used to infer hidden character types from observed text and metadata. Here, the hidden type is a state infrastructure context rather than a film persona.
 
-The project makes three contributions. First, it assembles a reproducible state-level dataset from public federal sources. Second, it learns three interpretable latent profiles: lower-income pressured states, mixed sparse states, and affluent dense states. Third, it estimates and evaluates a Bayesian network that predicts public charging access from latent context and EV adoption.
+The project makes three contributions. First, it assembles a reproducible statewide dataset from public federal sources. Second, it learns three interpretable latent profiles: lower income pressured states, mixed sparse states, and affluent dense states. Third, it estimates and evaluates a Bayesian network that predicts public charging access from latent context and EV adoption.
 
 ## Data
 
@@ -32,9 +32,9 @@ The unit of analysis is the U.S. state, including the District of Columbia. The 
 | Source | Variables used |
 |---|---|
 | U.S. Department of Energy Alternative Fuels Data Center, Electric Vehicle Charging Ports by State | Public charging ports, private charging ports, total charging ports |
-| U.S. Department of Energy Alternative Fuels Data Center, Electric Vehicle Registrations by State | 2023 light-duty EV registration counts |
+| U.S. Department of Energy Alternative Fuels Data Center, Electric Vehicle Registrations by State | 2023 passenger EV registration counts |
 | U.S. Census Bureau Population Estimates Program | 2023 resident population and Census region |
-| U.S. Census Bureau Small Area Income and Poverty Estimates | 2023 median household income and all-ages poverty rate |
+| U.S. Census Bureau Small Area Income and Poverty Estimates | 2023 median household income and poverty rate for all ages |
 | U.S. Census Bureau TIGERweb state boundary table | Land area, used to calculate population density |
 
 The raw files are saved under `data/raw/`, and the processed modeling file is saved as `data/processed/state_model_data.csv`. The script `scripts/build_analysis.py` reproduces the cleaning, modeling, evaluation, and figure generation.
@@ -55,7 +55,7 @@ $$
 
 Population density is calculated as 2023 population divided by land area in square miles. Since density is highly skewed, the latent profile model uses log population density. For the Bayesian network, continuous variables are discretized into tertiles labeled `Low`, `Middle`, and `High`. This keeps the conditional probability tables interpretable and avoids overfitting a 51-observation dataset with overly granular states.
 
-The median state in the dataset has 54.21 public charging ports per 100,000 residents and 5.63 EV registrations per 1,000 residents. These medians hide large differences: Vermont, California, Massachusetts, and the District of Columbia have especially high public port density, while several lower-adoption states have sparse public charging access.
+The median state in the dataset has 54.21 public charging ports per 100,000 residents and 5.63 EV registrations per 1,000 residents. These medians hide large differences: Vermont, California, Massachusetts, and the District of Columbia have especially high public port density, while several states with lower EV adoption have sparse public charging access.
 
 ## Latent Context Profiles
 
@@ -82,7 +82,7 @@ The three profiles are substantively interpretable:
 
 | Latent context profile | States | Median income | Poverty rate | Density | EVs per 1,000 | Public ports per 100,000 |
 |---|---:|---:|---:|---:|---:|---:|
-| Lower-income pressured | 16 | $64,691 | 14.83% | 158.5 | 4.21 | 40.58 |
+| Lower income pressured | 16 | $64,691 | 14.83% | 158.5 | 4.21 | 40.58 |
 | Mixed sparse | 25 | $77,997 | 11.26% | 168.5 | 6.59 | 68.23 |
 | Affluent dense | 10 | $97,227 | 10.33% | 1,475.1 | 15.22 | 111.74 |
 
@@ -97,7 +97,7 @@ The main probabilistic graphical model is a Bayesian network with seven discrete
 | Symbol | Variable | States |
 |---|---|---|
 | $R$ | Census region | Northeast, Midwest, South, West |
-| $Z$ | Latent context profile | Lower-income pressured, mixed sparse, affluent dense |
+| $Z$ | Latent context profile | Lower income pressured, mixed sparse, affluent dense |
 | $I$ | Median income level | Low, Middle, High |
 | $Q$ | Poverty level | Low, Middle, High |
 | $D$ | Population density level | Low, Middle, High |
@@ -113,7 +113,7 @@ $$
 
 This structure encodes the idea that region is a broad contextual prior, the latent profile summarizes social and geographic context, and public charging access depends most directly on both latent context and EV adoption.
 
-![Bayesian network used for state-level EV charging access.](images/pgm_dag.svg){#fig-dag width="80%"}
+![Bayesian network used for state EV charging access.](images/pgm_dag.svg){#fig-dag width="80%"}
 
 Each conditional probability table is estimated with Dirichlet smoothing:
 
@@ -122,7 +122,7 @@ $$
 \frac{n(x,a)+\alpha}{n(a)+\alpha |\mathcal{X}|}
 $$
 
-where $\alpha=1$. Smoothing is important here because the dataset is small and some profile-adoption combinations are rare.
+where $\alpha=1$. Smoothing is important here because the dataset is small and some combinations of profile and adoption level are rare.
 
 ## Results
 
@@ -130,7 +130,7 @@ where $\alpha=1$. Smoothing is important here because the dataset is small and s
 
 Public charging access is most strongly associated with EV adoption. The Spearman correlation between EV registrations per 1,000 residents and public charging ports per 100,000 residents is 0.852. Median household income is also strongly positive, while poverty is negative.
 
-| Relationship with public ports per 100,000 residents | Spearman rho | p-value |
+| Relationship with public ports per 100,000 residents | Spearman rho | p value |
 |---|---:|---:|
 | Median household income | 0.698 | < 0.001 |
 | Poverty rate | -0.380 | 0.006 |
@@ -139,7 +139,7 @@ Public charging access is most strongly associated with EV adoption. The Spearma
 
 ![EV adoption and public charging access by latent context profile.](images/ev_vs_ports.svg){#fig-ev-ports width="85%"}
 
-The scatterplot shows a clear upward pattern: states with more EV registrations per resident tend to have more public charging ports per resident. The affluent dense profile occupies the high-adoption, high-infrastructure portion of the space, while lower-income pressured states tend to cluster in lower-adoption and lower-access regions.
+The scatterplot shows a clear upward pattern: states with more EV registrations per resident tend to have more public charging ports per resident. The affluent dense profile appears in the part of the plot with more adoption and more infrastructure, while lower income pressured states mostly sit in the part with lower adoption and less access.
 
 ### Conditional Probabilities
 
@@ -150,21 +150,21 @@ The fitted Bayesian network estimates a large difference in high charging access
 | $P(C=\text{High} \mid E=\text{High})$ | 0.641 |
 | $P(C=\text{High} \mid E=\text{Low})$ | 0.100 |
 | $P(C=\text{High} \mid Z=\text{Affluent dense}, E=\text{High})$ | 0.750 |
-| $P(C=\text{High} \mid Z=\text{Lower-income pressured}, E=\text{Low})$ | 0.091 |
+| $P(C=\text{High} \mid Z=\text{Lower income pressured}, E=\text{Low})$ | 0.091 |
 
 ![Conditional probability of high charging access.](images/charging_cpt_heatmap.svg){#fig-cpt width="70%"}
 
-The conditional probability table suggests that adoption and context compound each other. High EV adoption is associated with high charging access in both mixed sparse and affluent dense profiles, but the highest estimated probability occurs when high adoption appears inside the affluent dense profile. Conversely, low-adoption states in the lower-income pressured profile have very low probability of high public charging access.
+The conditional probability table suggests that adoption and context compound each other. High EV adoption is associated with high charging access in both mixed sparse and affluent dense profiles, but the highest estimated probability occurs when high adoption appears inside the affluent dense profile. In contrast, states with low adoption in the lower income pressured profile have very low probability of high public charging access.
 
 ### Predictive Evaluation
 
-I evaluate the network using leave-one-out prediction of the discretized charging access level. For each held-out state, the conditional probability tables are re-estimated from the remaining states, and the model predicts the charging access level using the held-out state's context profile and EV adoption level.
+I evaluate the network using leave one out prediction of the discretized charging access level. For each held out state, the conditional probability tables are estimated again from the remaining states. The model then predicts the charging access level using the held out state's context profile and EV adoption level.
 
 | Metric | Value |
 |---|---:|
-| Leave-one-out accuracy | 64.7% |
+| Leave one out accuracy | 64.7% |
 | Chance baseline accuracy | 33.3% |
-| Leave-one-out log loss | 0.753 |
+| Leave one out log loss | 0.753 |
 | Marginal baseline log loss | 1.128 |
 
 The model is not large, but it predicts substantially better than chance. The log loss improvement also matters because it evaluates probability calibration rather than only the most likely class.
@@ -179,7 +179,7 @@ Second, EV adoption is the strongest observed correlate of public charging acces
 
 Third, probabilistic graphical models help make the structure explicit. A standard regression could estimate a single coefficient for income or EV adoption, but the Bayesian network gives conditional probability statements such as $P(C=\text{High} \mid Z,E)$. These statements are easy to compare across profiles and can be updated if future data include additional variables.
 
-There are several limitations. The analysis is state-level, so it cannot capture within-state inequality between urban and rural communities or between neighborhoods. Public ports are measured as counts, not reliability, speed, price, or uptime. The latent profile is estimated from observed social and geographic variables, so it should be understood as an interpretable summary rather than a directly measured social category. Finally, because all variables are measured in roughly the same period, the model does not establish temporal ordering.
+There are several limitations. The analysis is statewide, so it cannot capture inequality inside a state, such as differences between urban and rural communities or between neighborhoods. Public ports are measured as counts, not reliability, speed, price, or uptime. The latent profile is estimated from observed social and geographic variables, so it should be understood as an interpretable summary rather than a directly measured social category. Finally, because all variables are measured in roughly the same period, the model does not establish temporal ordering.
 
 ## Conclusion
 
@@ -199,7 +199,7 @@ The command regenerates:
 |---|---|
 | `data/processed/state_model_data.csv` | Final analytic dataset |
 | `data/processed/model_cpts.json` | Estimated Bayesian network CPTs |
-| `data/processed/loo_predictions.csv` | Leave-one-out predictions |
+| `data/processed/loo_predictions.csv` | Leave one out predictions |
 | `images/pgm_dag.svg` | Bayesian network diagram |
 | `images/profile_summary.svg` | Latent profile summary figure |
 | `images/ev_vs_ports.svg` | EV adoption and charging access scatterplot |
@@ -221,4 +221,4 @@ U.S. Census Bureau. "Annual Estimates of the Resident Population for the United 
 
 U.S. Census Bureau. "SAIPE State and County Estimates for 2023." Small Area Income and Poverty Estimates Program. https://www.census.gov/data/datasets/2023/demo/saipe/2023-state-and-county.html.
 
-U.S. Census Bureau. "U.S. States - ACS23 - Data as of January 1, 2023." TIGERweb. https://tigerweb.geo.census.gov/tigerwebmain/Files/bas25/tigerweb_bas25_state_2023_acs23_us.html.
+U.S. Census Bureau. "U.S. States, ACS23, Data as of January 1, 2023." TIGERweb. https://tigerweb.geo.census.gov/tigerwebmain/Files/bas25/tigerweb_bas25_state_2023_acs23_us.html.
